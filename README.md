@@ -1,18 +1,18 @@
-# Lazy Env
+# Lazy Vault
 
-![npm version](https://img.shields.io/npm/v/lazy-env?color=blue)
+![npm version](https://img.shields.io/npm/v/lazy-vault?color=blue)
 ![license](https://img.shields.io/badge/license-MIT-green)
 ![status](https://img.shields.io/badge/status-stable-brightgreen)
 
 **Stop leaking secrets & Start committing safely.**
 
-`lazy-env` is a simple CLI tool that lets you **encrypt `.env` files**, commit them to Git safely, and **sync secrets across machines** using a password you control.
+`lazy-vault` is a simple CLI tool that lets you **encrypt `.env` files**, commit them to Git safely, and **sync secrets across machines** using a password you control.
 
 No cloud. No accounts. No lock-in.
 
 ---
 
-## Why Lazy Env?
+## Why Lazy Vault?
 
 Environment variables are:
 
@@ -22,7 +22,7 @@ Environment variables are:
 
 `.env` files don’t belong in Git — but **encrypted `.env` files do**.
 
-`lazy-env` solves this by giving you a **password-based, zero-trust workflow**.
+`lazy-vault` solves this by giving you a **password-based, zero-trust workflow**.
 
 ---
 
@@ -48,13 +48,13 @@ Environment variables are:
 ## Installation
 
 ```bash
-npm install -g lazy-env
+npm install -g lazy-vault
 ```
 
 Or use without installing:
 
 ```bash
-npx lazy-env
+npx lazy-vault
 ```
 
 ---
@@ -64,7 +64,7 @@ npx lazy-env
 ### Encrypt Your `.env`
 
 ```bash
-lazy-env lock
+lazy-vault lock
 ```
 
 You will be prompted for a password.
@@ -85,7 +85,7 @@ git commit -m "Add encrypted env"
 ### Sync on Another Machine
 
 ```bash
-lazy-env sync
+lazy-vault sync
 ```
 
 - Enter the same password
@@ -112,7 +112,7 @@ lazy-env sync
 ## Security Model
 
 - **Zero-Knowledge**:
-  `lazy-env` cannot recover your password.
+  `lazy-vault` cannot recover your password.
 
 - **Authenticated Encryption**:
   Tampered or corrupted files will fail to decrypt.
@@ -142,22 +142,22 @@ Advanced `.env` features (multiline values, shell expansion) are intentionally n
 
 ## Commands
 
-### `lazy-env lock`
+### `lazy-vault lock`
 
 Encrypts `.env` into `.env.enc`.
 
 ```bash
-lazy-env lock
+lazy-vault lock
 ```
 
 ---
 
-### `lazy-env sync`
+### `lazy-vault sync`
 
 Decrypts `.env.enc` and merges it into `.env`.
 
 ```bash
-lazy-env sync
+lazy-vault sync
 ```
 
 ---

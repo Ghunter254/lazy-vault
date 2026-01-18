@@ -61,7 +61,7 @@ export async function writeEncEnv(content: string): Promise<void> {
  */
 export async function ensureGitIgnore(): Promise<void> {
   const gitignorePath = ".gitignore";
-  const ignoreRule = "\n# Added by lazy-env\n.env\n";
+  const ignoreRule = "\n# Added by lazy-vault\n.env\n";
 
   if (!(await fs.pathExists(gitignorePath))) {
     await fs.writeFile(gitignorePath, ignoreRule);

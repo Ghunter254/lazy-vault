@@ -7,7 +7,7 @@ import chalk from "chalk";
 const program = new Command();
 
 program
-  .name("lazy-env")
+  .name("lazy-vault")
   .description("A secure, simple way to manage encrypted .env files in Git")
   .version("1.0.0");
 
