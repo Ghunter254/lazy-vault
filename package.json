@@ -1,39 +1,60 @@
 {
   "name": "lazy-env",
-  "version": "0.0.0",
-  "description": "NPM package for lazy environment variable management",
+  "version": "1.0.0",
+  "description": "A simple CLI for encrypting and syncing .env files safely in Git",
   "license": "MIT",
   "author": "ghost",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
+  "type": "module",
+  "bin": {
+    "lazy-env": "./dist/cli/bin.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
-    "lint": "tsc",
+    "lint": "tsc --noEmit",
     "test": "vitest"
   },
-  "exports": {
-    ".": {
-      "require": "./dist/index.js",
-      "import": "./dist/index.mjs",
-      "types": "./dist/index.d.ts"
-    }
-  },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE"
   ],
-  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Ghunter254/lazy-env"
+  },
+  "bugs": {
+    "url": "https://github.com/Ghunter254/lazy-env/issues"
+  },
+  "homepage": "https://github.com/Ghunter254/lazy-env#readme",
+  "keywords": [
+    "env",
+    "dotenv",
+    "environment",
+    "secrets",
+    "encryption",
+    "cli",
+    "git",
+    "nodejs",
+    "typescript"
+  ],
   "dependencies": {
     "argon2": "^0.44.0",
     "chalk": "^5.6.2",
     "commander": "^14.0.2",
-    "fs-extra": "^11.3.3"
+    "fs-extra": "^11.3.3",
+    "inquirer": "^13.2.0"
   },
   "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/inquirer": "^9.0.9",
     "@types/node": "^25.0.3",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.16"
+    "vitest": "^4.0.16",
+    "tsx": "^4.21.0"
   }
 }

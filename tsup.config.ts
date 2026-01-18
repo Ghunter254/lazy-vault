@@ -2,13 +2,16 @@ import { defineConfig } from "tsup";
 
 export default defineConfig({
   entry: {
-    index: "src/index.ts",
-    // utils: "src/utils/index.ts",
-    // "cli/bin": "src/cli/bin.ts",
+    "cli/bin": "src/cli/bin.ts",
   },
-  format: ["cjs", "esm"], // Build for commonJS and ESmodules
-  dts: true, // Generate declaration file (.d.ts)
-  splitting: false,
-  sourcemap: true,
-  clean: true, // Clean dist folder before build
+  format: ["esm"], // Single format for CLI
+  splitting: false, // One file output
+  sourcemap: true, // Useful for debugging
+  clean: true, // Clean dist before build
+  minify: false, // Better stack traces for CLI
+  skipNodeModulesBundle: true,
+  // banner: {
+  //   js: "#!/usr/bin/env node",
+  // },
+  outDir: "dist",
 });
