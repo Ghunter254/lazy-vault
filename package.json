@@ -24,12 +24,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/Ghunter254/lazy-env"
+    "url": "https://github.com/Ghunter254/lazy-vault"
   },
   "bugs": {
-    "url": "https://github.com/Ghunter254/lazy-env/issues"
+    "url": "https://github.com/Ghunter254/lazy-vault/issues"
   },
-  "homepage": "https://github.com/Ghunter254/lazy-env#readme",
+  "homepage": "https://github.com/Ghunter254/lazy-vault#readme",
   "keywords": [
     "env",
     "dotenv",
