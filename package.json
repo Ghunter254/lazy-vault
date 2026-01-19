@@ -1,6 +1,6 @@
 {
   "name": "lazy-vault",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A simple CLI for encrypting and syncing .env files safely in Git",
   "license": "MIT",
   "author": "ghost",
