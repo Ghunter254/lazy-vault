@@ -3,6 +3,7 @@ import { Command } from "commander";
 import { syncCommand } from "./commands/sync";
 import { lockCommand } from "./commands/lock";
 import chalk from "chalk";
+import { initCommand } from "./commands/init";
 
 const program = new Command();
 
@@ -13,6 +14,7 @@ program
 
 program.addCommand(syncCommand);
 program.addCommand(lockCommand);
+program.addCommand(initCommand);
 
 program.on("command:*", () => {
   console.error(

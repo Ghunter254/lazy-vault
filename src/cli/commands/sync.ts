@@ -5,34 +5,55 @@ import inquirer from "inquirer";
 import * as storage from "../../lib/storage";
 import * as crypto from "../../lib/crypto";
 import * as parser from "../../lib/parser";
+import * as config from "../../lib/config";
 
 export const syncCommand = new Command("sync")
   .description("Decrypts .env.enc and merges it with local .env")
-  .action(async () => {
+  .argument("[env]", "Environment name", "default") // Support for 'lazy-guard sync production'
+  .option("-i, --input <path>", "Override encrypted file path")
+  .option("-o, --output <path>", "Override target .env path")
+  .action(async (envName, options) => {
     try {
-      console.log(chalk.blue("Preparing to Sync (Decrypt)..."));
+      console.log(chalk.blue("Preparing to Sync..."));
 
-      if (!(await storage.hasEncEnv())) {
-        console.error(chalk.red("Error: No .env.enc file found."));
+      const fileConfig = await config.loadConfig(envName);
+
+      const encryptedPath = options.input || fileConfig.output;
+      const rawPath = options.output || fileConfig.source;
+
+      console.log(chalk.blue(`   Syncing [${envName}]...`));
+      console.log(chalk.gray(`   Source (Encrypted): ${encryptedPath}`));
+      console.log(chalk.gray(`   Target (Raw):       ${rawPath}`));
+
+      if (!(await storage.exists(encryptedPath))) {
+        console.error(chalk.red(`Error: File ${encryptedPath} not found.`));
         process.exit(1);
       }
 
-      const answers = await inquirer.prompt([
-        {
-          type: "password",
-          name: "password",
-          message: "Enter password to decrypt:",
-          mask: "*",
-        },
-      ]);
+      let password = process.env.LAZY_ENV_PASSWORD; // FOR CI/CD support.
+      if (!password) {
+        const answers = await inquirer.prompt([
+          {
+            type: "password",
+            name: "password",
+            message: "Enter password to decrypt:",
+            mask: "*",
+          },
+        ]);
 
-      const password = answers.password;
+        password = answers.password;
+      } else {
+        console.log(chalk.yellow(" Using password from LAZY_ENV_PASSWORD"));
+      }
 
-      const encryptedContent = await storage.readEncEnv();
+      const encryptedContent = await storage.readFile(encryptedPath);
       let decryptedRaw = "";
 
       try {
-        decryptedRaw = await crypto.decrypt(encryptedContent, password);
+        decryptedRaw = await crypto.decrypt(
+          encryptedContent,
+          password as string,
+        );
       } catch (e) {
         throw new Error("Invalid password or corrupted file.");
       }
@@ -40,11 +61,11 @@ export const syncCommand = new Command("sync")
       const remoteObj = parser.parse(decryptedRaw);
 
       let finalObj = remoteObj;
-      let actionMsg = "Created new .env";
+      let actionMsg = `Created new ${rawPath}`;
 
-      if (await storage.hasRawEnv()) {
-        console.log(chalk.gray("Local .env found. Merging..."));
-        const localRaw = await storage.readRawEnv();
+      if (await storage.exists(rawPath)) {
+        console.log(chalk.gray(` Local ${rawPath} found. Merging...`));
+        const localRaw = await storage.readFile(rawPath);
         const localObj = parser.parse(localRaw);
 
         // MERGE: Remote wins conflicts, Local keeps unique keys
@@ -53,7 +74,7 @@ export const syncCommand = new Command("sync")
       }
 
       const finalString = parser.stringify(finalObj);
-      await storage.writeRawEnv(finalString);
+      await storage.writeFile(rawPath, finalString);
 
       console.log(chalk.green(`\nSuccess! ${actionMsg}`));
       console.log(

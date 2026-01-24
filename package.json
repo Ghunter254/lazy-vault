@@ -6,7 +6,7 @@
   "author": "ghost",
   "type": "module",
   "bin": {
-    "lazy-env": "./dist/cli/bin.js"
+    "lazy-vault": "./dist/cli/bin.js"
   },
   "engines": {
     "node": ">=18"
