@@ -1,47 +1,52 @@
-# Lazy Vault
+# lazy-vault
 
 ![npm version](https://img.shields.io/npm/v/lazy-vault?color=blue)
 ![license](https://img.shields.io/badge/license-MIT-green)
 ![status](https://img.shields.io/badge/status-stable-brightgreen)
 
-**Stop leaking secrets & Start committing safely.**
+**Security for the lazy developer.**
+Stop worrying about sharing `.env` files. `lazy-vault` encrypts your secrets so you can safely commit them to Git.
 
-`lazy-vault` is a simple CLI tool that lets you **encrypt `.env` files**, commit them to Git safely, and **sync secrets across machines** using a password you control.
-
-No cloud. No accounts. No lock-in.
+Now with **Smart Profiles** and **Project Configuration**.
 
 ---
 
-## Why Lazy Vault?
+## What is lazy-vault?
 
-Environment variables are:
+`lazy-vault` is a CLI tool for **secure environment variable management**:
 
-- Critical
-- Sensitive
-- Painful to share across machines and teams
+- Encrypt `.env` files
+- Commit encrypted secrets to Git
+- Sync secrets across machines safely
+- Manage multiple environments (dev, prod, staging)
+- Use strong cryptography without complexity
 
-`.env` files don’t belong in Git — but **encrypted `.env` files do**.
-
-`lazy-vault` solves this by giving you a **password-based, zero-trust workflow**.
+No cloud.
+No accounts.
+No vendor lock-in.
+Your password never leaves your machine.
 
 ---
 
 ## Core Features
 
 - **Strong Encryption**
-  Uses modern, authenticated encryption with a password-derived key.
+  AES-256-GCM + Argon2id (memory-hard key derivation)
 
-- **Git-Friendly**
-  Encrypt once → commit `.env.enc` → safely sync anywhere.
+- **Git-Safe Workflow**
+  Commit `.env.enc`, never `.env`
 
-- **Simple CLI Workflow**
-  Two commands. No config files. No magic.
+- **Smart Profiles (v2)**
+  Security modes for speed vs paranoia
 
-- **Merge-Aware Syncing**
-  Remote secrets override conflicts, local-only keys are preserved.
+- **Project Configuration (v2)**
+  Multi-environment support via config file
 
-- **Safe by Default**
-  Automatically adds `.env` to `.gitignore`.
+- **Merge-Safe Syncing**
+  Remote secrets override conflicts, local-only keys are preserved
+
+- **Automation Ready**
+  Headless mode for CI/CD and deployments
 
 ---
 
@@ -51,7 +56,7 @@ Environment variables are:
 npm install -g lazy-vault
 ```
 
-Or use without installing:
+Or without installing:
 
 ```bash
 npx lazy-vault
@@ -59,121 +64,180 @@ npx lazy-vault
 
 ---
 
-## Quick Start
+# Quick Start
 
-### Encrypt Your `.env`
+## Initialize (Optional)
+
+Create a project config for multi-environment setups:
+
+```bash
+lazy-vault init
+```
+
+Creates:
+
+```json
+lazy.config.json
+```
+
+---
+
+## Lock (Encrypt)
+
+When you add new secrets:
 
 ```bash
 lazy-vault lock
 ```
 
-You will be prompted for a password.
+### What it does:
 
-This will:
-
-- Encrypt `.env` → `.env.enc`
-- Add `.env` to `.gitignore`
-- Leave `.env.enc` safe to commit
-
-```bash
-git add .env.enc
-git commit -m "Add encrypted env"
-```
+- Encrypts `.env` → `.env.enc`
+- Uses **AES-256-GCM + Argon2id**
+- Adds `.env` to `.gitignore`
+- Safe to commit `.env.enc`
 
 ---
 
-### Sync on Another Machine
+## Sync (Decrypt & Merge)
+
+When pulling code or deploying:
 
 ```bash
 lazy-vault sync
 ```
 
-- Enter the same password
-- `.env` will be created or merged automatically
+### What it does:
+
+- Decrypts `.env.enc`
+- Merges into `.env`
+
+**Smart Merge Logic:**
+
+- Remote keys overwrite local conflicts
+- Local-only keys are preserved
 
 ---
 
-## How It Works (High Level)
+# Configuration & Profiles (v2)
 
-1. Your password is converted into a cryptographic key using a memory-hard algorithm
-2. `.env` is encrypted using authenticated encryption
-3. The encrypted file (`.env.enc`) contains:
-   - A random salt
-   - A random IV
-   - An authentication tag
-   - The encrypted payload
+## Project Configuration
 
-4. On sync, the file is decrypted and merged safely
+`lazy.config.json`
 
-**Your password is never stored. Ever.**
-
----
-
-## Security Model
-
-- **Zero-Knowledge**:
-  `lazy-vault` cannot recover your password.
-
-- **Authenticated Encryption**:
-  Tampered or corrupted files will fail to decrypt.
-
-- **Local-Only Secrets**:
-  All encryption happens on your machine.
-
-**Important**
-If you lose your password, your secrets cannot be recovered.
-
----
-
-## Supported `.env` Format
-
-- Simple `KEY=value` pairs
-- Comments (`#`) are ignored
-- Quotes are supported
-
-```env
-DATABASE_URL="postgres://localhost/db"
-API_KEY=super-secret
+```json
+{
+  "default": {
+    "source": ".env",
+    "output": ".env.enc",
+    "security": "light"
+  },
+  "production": {
+    "source": ".env.prod",
+    "output": ".env.prod.enc",
+    "security": "heavy"
+  }
+}
 ```
 
-Advanced `.env` features (multiline values, shell expansion) are intentionally not supported.
-
----
-
-## Commands
-
-### `lazy-vault lock`
-
-Encrypts `.env` into `.env.enc`.
+Now you can run:
 
 ```bash
-lazy-vault lock
+lazy-vault lock production
+lazy-vault sync production
 ```
 
 ---
 
-### `lazy-vault sync`
+## Security Profiles
 
-Decrypts `.env.enc` and merges it into `.env`.
+Trade speed for paranoia.
+
+### Light (default)
+
+- Fast (~0.5s)
+- Optimized for frequent dev usage
+
+### Heavy
+
+- Slow (~1s+)
+- Uses ~256MB RAM
+- GPU-resistant
+- Designed for production secrets
 
 ```bash
+lazy-vault lock --profile heavy
+```
+
+---
+
+# Automation & CI (Headless Mode)
+
+For scripts, pipelines, and deployments:
+
+```bash
+export LAZY_VAULT_PASSWORD="your-secure-password"
 lazy-vault sync
 ```
 
+PowerShell:
+
+```powershell
+$env:LAZY_VAULT_PASSWORD="your-secure-password"
+lazy-vault sync
+```
+
+No interactive prompts.
+Safe for CI/CD.
+
 ---
 
-## Contributing
+# 🛠 CLI Reference
+
+| Command      | Description                 |
+| ------------ | --------------------------- |
+| `init`       | Create `lazy.config.json`   |
+| `lock [env]` | Encrypt environment         |
+| `sync [env]` | Decrypt & merge environment |
+
+### Flags
+
+| Flag                   | Description                          |
+| ---------------------- | ------------------------------------ |
+| `-p, --profile <mode>` | Security profile (`light` / `heavy`) |
+| `-i, --input <path>`   | Input file override                  |
+| `-o, --output <path>`  | Output file override                 |
+
+---
+
+# Security Model
+
+- Zero-knowledge encryption
+- Local-only cryptography
+- Authenticated encryption (tamper detection)
+- No password storage
+- No recovery backdoors
+
+> If you lose your password, your secrets **cannot be recovered**.
+
+This is by design.
+
+---
+
+# 🤝 Contributing
 
 Contributions are welcome.
 
 1. Fork the repo
 2. Create a feature branch
-3. Open a pull request
+3. Open a PR
 
-Security-related issues should be reported responsibly.
+Security issues should be reported responsibly.
 
 ---
 
-## 📄 License
+# 📄 License
 
 MIT License © ghost
+
+---
